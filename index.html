@@ -18,7 +18,38 @@
     .category-toggle { margin: 0 8px 12px 0; padding: 8px 14px; border-radius: 20px; border: 1px solid #ccc; background: #f7f7fb; cursor: pointer; display: inline-block; font-weight: bold;}
     .category-toggle.active { background: #9b59b6; color: #fff; border: 2px solid #7c3aed; }
     .category-bar { margin-bottom: 14px; }
-  </style>
+  
+  @media screen and (max-width: 600px) {
+    .flex { flex-direction: column; }
+
+    .product .col,
+    .extra .col {
+      flex: 1 1 100%;
+      min-width: unset;
+    }
+
+    .img-thumb {
+      margin: 0 auto 8px auto;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      font-size: 16px;
+    }
+
+    .btn {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .category-toggle {
+      display: block;
+      margin-bottom: 10px;
+    }
+  }
+
+</style>
 </head>
 <body>
   <h2>Car Audio Email Quote Generator</h2>
