@@ -49,7 +49,6 @@
     }
   }
 
-
   .optional-extras-container {
     display: flex;
     flex-wrap: wrap;
@@ -57,7 +56,6 @@
     padding: 10px 0;
     justify-content: center;
   }
-
 </style>
 </head>
 <body>
@@ -154,6 +152,7 @@
         .filter(row => row[1] && row[2] && (row[4] || row[5]))
         .map((row, idx) => ({
           id: 'prod_' + idx,
+          quantity: 1,
           checked: false,
           brand: row[1] || '',
           model: row[2] || '',
@@ -235,6 +234,7 @@
               ${p.imgUrl ? `<img src="${p.imgUrl}" class="img-thumb">` : ''}
             </div>
             <div class="col" style="flex:2;">
+<div><label>Quantity:</label><input type="number" min="1" step="1" value="1" onchange="editProductQuantityById('${p.id}', this.value)"></div>
               <b>${p.brand} ${p.model}</b> <br>
               <i>${p.desc}</i>
               <div>
@@ -244,14 +244,6 @@
               <div>
                 <label>Install Price:</label>
                 <input type="number" min="0" step="0.01" value="${p.install}" onchange="editProductInstallById('${p.id}', this.value)">
-              </div>
-              <div>
-                <label>Category:</label>
-                <span>${p.category}</span>
-              </div>
-              <div>
-                <label>Parts Price:</label>
-                <input type="number" min="0" step="0.01" value="${p.partsPrice}" onchange="editProductPartsPriceById('${p.id}', this.value)">
               </div>
               <div>
                 <label>Key Features:</label>
@@ -273,6 +265,13 @@
     window.editProductInstallById = function(id, v) { const p = products.find(x => x.id === id); if (p) p.install = parseFloat(v)||0; }
     window.editProductPartsPriceById = function(id, v) { const p = products.find(x => x.id === id); if (p) p.partsPrice = parseFloat(v)||0; }
     window.editProductKeyFeatById = function(id, v) { const p = products.find(x => x.id === id); if (p) p.keyFeat = v; }
+
+    
+    window.editProductQuantityById = function(id, v) {
+      const p = products.find(x => x.id === id);
+      if (p) p.quantity = Math.max(parseInt(v) || 1, 1);
+    }
+
 
     // ---- RENDER EXTRAS ----
     function renderExtrasList() {
@@ -306,6 +305,7 @@
               ${ex.imgUrl ? `<img src="${ex.imgUrl}" class="img-thumb">` : ''}
             </div>
             <div class="col" style="flex:2;">
+<div><label>Quantity:</label><input type="number" min="1" step="1" value="1" onchange="editProductQuantityById('${p.id}', this.value)"></div>
               <b>${ex.name}</b>
               <div>
                 <label>Extra Price:</label>
@@ -384,7 +384,7 @@
           e.checked && e.category && e.category.toLowerCase() === item.category.toLowerCase()
         );
         const itemExtrasTotal = itemExtras.reduce((t,e)=>t+e.price,0);
-        const totalInstalled = item.price + item.install + (usePartsPrice||0) + itemExtrasTotal;
+        const totalInstalled = (item.price + item.install + (usePartsPrice||0)) * item.quantity + itemExtrasTotal;
 
         productHtml += `
         <div style="font-family:Arial,sans-serif;max-width:600px;padding:10px;border:1px solid #ddd;margin-bottom:20px;">
