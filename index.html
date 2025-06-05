@@ -246,6 +246,14 @@
                 <input type="number" min="0" step="0.01" value="${p.install}" onchange="editProductInstallById('${p.id}', this.value)">
               </div>
               <div>
+                <label>Category:</label>
+                <span>${p.category}</span>
+              </div>
+              <div>
+                <label>Parts Price:</label>
+                <input type="number" min="0" step="0.01" value="${p.partsPrice}" onchange="editProductPartsPriceById('${p.id}', this.value)">
+              </div>
+              <div>
                 <label>Key Features:</label>
                 <textarea onchange="editProductKeyFeatById('${p.id}', this.value)">${p.keyFeat}</textarea>
               </div>
