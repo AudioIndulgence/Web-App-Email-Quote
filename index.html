@@ -263,12 +263,14 @@
 
       // Only show extras that match one of the selected categories
       
+      // Get selected categories from checked products
       const selectedCategoriesForExtras = products
         .filter(p => p.checked && p.category)
         .map(p => p.category.toLowerCase().trim());
 
       console.log("Categories matched for extras:", selectedCategoriesForExtras);
 
+      // Only show extras that match selected categories
       const filteredExtras = extras.filter(ex => {
         const exCat = ex.category ? ex.category.toLowerCase().trim() : "";
         const match = selectedCategoriesForExtras.includes(exCat);
