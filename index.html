@@ -114,7 +114,6 @@
         .filter(row => row[1] && row[2] && (row[4] || row[5]))
         .map((row, idx) => ({
           id: 'prod_' + idx,
-          quantity: 1,
           checked: false,
           brand: row[1] || '',
           model: row[2] || '',
@@ -196,7 +195,6 @@
               ${p.imgUrl ? `<img src="${p.imgUrl}" class="img-thumb">` : ''}
             </div>
             <div class="col" style="flex:2;">
-<div><label>Quantity:</label><input type="number" min="1" step="1" value="1" onchange="editProductQuantityById('${p.id}', this.value)"></div>
               <b>${p.brand} ${p.model}</b> <br>
               <i>${p.desc}</i>
               <div>
@@ -236,17 +234,6 @@
     window.editProductPartsPriceById = function(id, v) { const p = products.find(x => x.id === id); if (p) p.partsPrice = parseFloat(v)||0; }
     window.editProductKeyFeatById = function(id, v) { const p = products.find(x => x.id === id); if (p) p.keyFeat = v; }
 
-    
-    window.editProductQuantityById = function(id, v) {
-      const p = products.find(x => x.id === id);
-      if (p) {
-        const qty = Math.max(parseInt(v) || 1, 1);
-        p.quantity = qty;
-        renderExtrasList();
-      }
-    }
-
-
     // ---- RENDER EXTRAS ----
     function renderExtrasList() {
       const div = document.getElementById('extrasList');
@@ -262,22 +249,9 @@
       }
 
       // Only show extras that match one of the selected categories
-      
-      // Get selected categories from checked products
-      const selectedCategoriesForExtras = products
-        .filter(p => p.checked && p.category)
-        .map(p => p.category.toLowerCase().trim());
-
-      console.log("Categories matched for extras:", selectedCategoriesForExtras);
-
-      // Only show extras that match selected categories
-      const filteredExtras = extras.filter(ex => {
-        const exCat = ex.category ? ex.category.toLowerCase().trim() : "";
-        const match = selectedCategoriesForExtras.includes(exCat);
-        console.log(`Extra: ${ex.name} — Category: "${exCat}" — ${match ? 'MATCH' : 'SKIPPED'}`);
-        return match;
-      });
-
+      const filteredExtras = extras.filter(ex =>
+        ex.category && selectedCategoriesForExtras.includes(ex.category.toLowerCase())
+      );
 
       if (filteredExtras.length === 0) {
         div.innerHTML = '<div style="color:#666;">No optional extras available for these product categories.</div>';
@@ -292,7 +266,6 @@
               ${ex.imgUrl ? `<img src="${ex.imgUrl}" class="img-thumb">` : ''}
             </div>
             <div class="col" style="flex:2;">
-<div><label>Quantity:</label><input type="number" min="1" step="1" value="1" onchange="editProductQuantityById('${p.id}', this.value)"></div>
               <b>${ex.name}</b>
               <div>
                 <label>Extra Price:</label>
