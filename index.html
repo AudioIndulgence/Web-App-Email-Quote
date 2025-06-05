@@ -79,7 +79,8 @@
   <h3>Select Optional Extras</h3>
   <div id="extrasList"></div>
   <button class="btn" onclick="generateQuote()">Generate Quote</button>
-  <button class="btn" onclick="copyQuote()">Copy to Clipboard</button>
+  <button class="btn" onclick="copyQuote()">Copy Text Only</button>
+<button class="btn" onclick="copyQuoteAsHTML()">📋 Copy Quote with Images</button>
   <div id="quotePreview" class="quote-preview"></div>
 
   <script>
@@ -208,6 +209,10 @@
               <div>
                 <label>Category:</label>
                 <span>${p.category}</span>
+              </div>
+              <div>
+                <label>Parts Price:</label>
+                <input type="number" min="0" step="0.01" value="${p.partsPrice}" onchange="editProductPartsPriceById('${p.id}', this.value)">
               </div>
               <div>
                 <label>Key Features:</label>
@@ -425,6 +430,20 @@
     }
     // ---- INIT ----
     loadAllData();
-  </script>
+  
+    function copyQuoteAsHTML() {
+      const html = document.getElementById('quotePreview').innerHTML;
+      const blob = new Blob([html], { type: 'text/html' });
+      const data = [new ClipboardItem({ 'text/html': blob })];
+
+      navigator.clipboard.write(data).then(() => {
+        alert('HTML quote copied with images and formatting!');
+      }).catch(err => {
+        console.error('Clipboard copy failed', err);
+        alert('Sorry, your browser does not support copying formatted content.');
+      });
+    }
+
+</script>
 </body>
 </html>
