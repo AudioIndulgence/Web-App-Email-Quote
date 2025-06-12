@@ -76,7 +76,7 @@
   <h3>Select Products</h3>
   <div id="productsList"></div>
   <hr>
-  <h3>Select Optioned Extras</h3>
+  <h3>Select Optional Extras</h3>
   <div id="extrasList"></div>
   <button class="btn" onclick="generateQuote()">Generate Quote</button>
   <button class="btn" onclick="copyQuote()">Copy Text Only</button>
@@ -331,6 +331,11 @@
       // Selected extras
       // (Don't filter here! We'll assign per-product below)
 
+      
+      const opening = `
+        <p>Hi ${customerName}, thanks for reaching out about ${inquiryReason} for your ${vehicleInfo}. Please find below quality product options and pricing totals which include conversion parts and labour for your consideration.</p>
+      `;
+
       // Build product blocks (logic mimics your sheet)
       let productHtml = '';
       selected.forEach(item => {
@@ -361,7 +366,7 @@
             : ''}
           ${(itemExtras.length)
             ? `<div style="margin-top:10px;">
-                  <p><strong>🛠 Optioned Extras:</strong></p>
+                  <p><strong>🛠 Optional Extras:</strong></p>
                   <div style="display:flex;flex-wrap:wrap;gap:10px;padding:10px 0;">
                     ${itemExtras.map(ex => `
                       <div style="flex:1 1 calc(50% - 10px);box-sizing:border-box;text-align:center;align-items:flex-start;display:flex;flex-direction:column;justify-content:flex-start;padding:10px;border:1px solid #ccc;border-radius:8px;background-color:#f9f9f9;height:180px;">
