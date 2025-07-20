@@ -396,36 +396,9 @@ showcaseHtml += `<div style="margin:30px 0;">
 }
 
 // Build opening and closing (static for now, you can swap for AI if you want!)
-
-      try {
-        const greeting = `Hi ${customerName}, thanks for reaching out about ${inquiryReason} for your ${vehicleInfo}.`;
-
-        let openingParts = [];
-        const selectedCategories = [...new Set(selected.map(p => p.category?.toLowerCase().trim()).filter(Boolean))];
-        console.log("Selected categories:", selectedCategories);
-        console.log("Available openings:", categoryOpenings);
-
-        const dashIndex = selectedCategories.indexOf("dash cameras");
-        if (dashIndex !== -1 && categoryOpenings["dash cameras"]) {
-          openingParts.push(categoryOpenings["dash cameras"]);
-          selectedCategories.splice(dashIndex, 1);
-          console.log("Added dash cameras paragraph");
-        }
-
-        selectedCategories.forEach(cat => {
-          if (categoryOpenings[cat]) {
-            openingParts.push(categoryOpenings[cat]);
-            console.log(`Added paragraph for category: ${cat}`);
-          }
-        });
-
-        const opening = `<p>${greeting}</p><p>${openingParts.join(" ")}</p>`;
-        console.log("Final opening paragraph HTML:", opening);
-      } catch (err) {
-        console.error("Error building opening paragraph:", err);
-        const opening = `<p>Hi ${customerName}, thanks for reaching out about your vehicle.</p>`;
-      }
-
+const opening = `
+       <p>Hi ${customerName}, thanks for reaching out about ${inquiryReason} for your ${vehicleInfo}. Please find below quality product options and pricing totals which include conversion parts and labour for your consideration.</p>
+     `;
 
 const closing = `
        <p>I hope this information has been helpful in guiding you toward the right upgrade for your vehicle.</p>
