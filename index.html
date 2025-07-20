@@ -98,6 +98,21 @@ let allCategories = [];
 let selectedCategories = [];
 
 // ---- LOAD SHEET DATA ----
+
+let categoryOpenings = {};
+
+async function fetchCategoryOpenings() {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Openings?key=${API_KEY}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const rows = data.values || [];
+  rows.slice(1).forEach(row => {
+    if (row[0] && row[1]) {
+      categoryOpenings[row[0].toLowerCase()] = row[1];
+    }
+  });
+}
+
 async function fetchSheet(tab) {
 const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(tab)}?key=${API_KEY}`;
 const res = await fetch(url);
@@ -106,6 +121,7 @@ return data.values || [];
 }
 
 async function loadAllData() {
+  await fetchCategoryOpenings();
 const [prodRows, extrasRows, vehiclePartsRows] = await Promise.all([
 fetchSheet(PRODUCTS_TAB),
 fetchSheet(EXTRAS_TAB),
@@ -396,9 +412,25 @@ showcaseHtml += `<div style="margin:30px 0;">
 }
 
 // Build opening and closing (static for now, you can swap for AI if you want!)
-const opening = `
-       <p>Hi ${customerName}, thanks for reaching out about ${inquiryReason} for your ${vehicleInfo}. Please find below quality product options and pricing totals which include conversion parts and labour for your consideration.</p>
-     `;
+
+      let openingParts = [];
+      const greeting = `Hi ${customerName},`;
+      const selectedCategories = [...new Set(selected.map(p => p.category.toLowerCase()))];
+
+      const dashIndex = selectedCategories.indexOf("dash cameras");
+      if (dashIndex !== -1 && categoryOpenings["dash cameras"]) {
+        openingParts.push(categoryOpenings["dash cameras"]);
+        selectedCategories.splice(dashIndex, 1);
+      }
+
+      selectedCategories.forEach(cat => {
+        if (categoryOpenings[cat]) {
+          openingParts.push(categoryOpenings[cat]);
+        }
+      });
+
+      const opening = `<p>${greeting}</p><p>${openingParts.join(" ")}</p>`;
+
 
 const closing = `
        <p>I hope this information has been helpful in guiding you toward the right upgrade for your vehicle.</p>
