@@ -397,31 +397,34 @@ showcaseHtml += `<div style="margin:30px 0;">
 
 // Build opening and closing (static for now, you can swap for AI if you want!)
 
-      // Personalized greeting with reason and vehicle
-      const greeting = `Hi ${customerName}, thanks for reaching out about ${inquiryReason} for your ${vehicleInfo}.`;
+      try {
+        const greeting = `Hi ${customerName}, thanks for reaching out about ${inquiryReason} for your ${vehicleInfo}.`;
 
-      // Build follow-up paragraphs based on selected categories
-      let openingParts = [];
-      const selectedCategories = [...new Set(selected.map(p => p.category.toLowerCase()))];
-      console.log("Selected categories:", selectedCategories);
-      console.log("Available openings:", categoryOpenings);
+        let openingParts = [];
+        const selectedCategories = [...new Set(selected.map(p => p.category?.toLowerCase().trim()).filter(Boolean))];
+        console.log("Selected categories:", selectedCategories);
+        console.log("Available openings:", categoryOpenings);
 
-      const dashIndex = selectedCategories.indexOf("dash cameras");
-      if (dashIndex !== -1 && categoryOpenings["dash cameras"]) {
-        openingParts.push(categoryOpenings["dash cameras"]);
-        selectedCategories.splice(dashIndex, 1);
-        console.log("Added dash cameras paragraph");
-      }
-
-      selectedCategories.forEach(cat => {
-        if (categoryOpenings[cat]) {
-          openingParts.push(categoryOpenings[cat]);
-          console.log(`Added paragraph for category: ${cat}`);
+        const dashIndex = selectedCategories.indexOf("dash cameras");
+        if (dashIndex !== -1 && categoryOpenings["dash cameras"]) {
+          openingParts.push(categoryOpenings["dash cameras"]);
+          selectedCategories.splice(dashIndex, 1);
+          console.log("Added dash cameras paragraph");
         }
-      });
 
-      const opening = `<p>${greeting}</p><p>${openingParts.join(" ")}</p>`;
-      console.log("Final opening paragraph HTML:", opening);
+        selectedCategories.forEach(cat => {
+          if (categoryOpenings[cat]) {
+            openingParts.push(categoryOpenings[cat]);
+            console.log(`Added paragraph for category: ${cat}`);
+          }
+        });
+
+        const opening = `<p>${greeting}</p><p>${openingParts.join(" ")}</p>`;
+        console.log("Final opening paragraph HTML:", opening);
+      } catch (err) {
+        console.error("Error building opening paragraph:", err);
+        const opening = `<p>Hi ${customerName}, thanks for reaching out about your vehicle.</p>`;
+      }
 
 
 const closing = `
