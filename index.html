@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+e<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -159,7 +159,7 @@ vehiclePartsList = vehiclePartsRows.slice(1).map(row => row[0]).filter(Boolean);
 
 // Detect all unique categories from products (for the filter bar)
 allCategories = Array.from(new Set(products.map(p => p.category))).filter(Boolean);
-selectedCategories = [...];
+selectedCategories = [...selectedcategories];
 
 renderCategoryButtons();
 renderProductList();
