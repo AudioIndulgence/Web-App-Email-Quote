@@ -14,7 +14,7 @@ input[type="text"], input[type="number"], textarea { width: 100%; padding: 4px; 
 .quote-preview { background: #f5edfa; border: 2px solid #9b59b6; border-radius: 12px; padding: 18px; margin: 20px 0; }
 .btn { background: #9b59b6; color: #fff; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-size: 1.1em; }
 .btn:active { opacity: 0.8; }
-.img-thumb { max-width: 90px; max-height: 90px; border-radius: 6px; display: block; margin-bottom: 4px; }
+.img-thumb { max-width: 300px; max-height: 300px; border-radius: 6px; display: block; margin-bottom: 4px; }
 .category-toggle { margin: 0 8px 12px 0; padding: 8px 14px; border-radius: 20px; border: 1px solid #ccc; background: #f7f7fb; cursor: pointer; display: inline-block; font-weight: bold;}
 .category-toggle.active { background: #9b59b6; color: #fff; border: 2px solid #7c3aed; }
 .category-bar { margin-bottom: 14px; }
@@ -95,7 +95,7 @@ const VEHICLE_PARTS_TAB = 'Vehicle Parts';
 // ---- STATE ----
 let products = [], extras = [], vehiclePartsList = [];
 let allCategories = [];
-let selectedCategories = [];
+let selectedCategories = []; // start empty, no products until category is selected
 
 // ---- LOAD SHEET DATA ----
 
@@ -159,7 +159,7 @@ vehiclePartsList = vehiclePartsRows.slice(1).map(row => row[0]).filter(Boolean);
 
 // Detect all unique categories from products (for the filter bar)
 allCategories = Array.from(new Set(products.map(p => p.category))).filter(Boolean);
-selectedCategories = [];
+selectedCategories = []; // start empty, no products until category is selected
 
 renderCategoryButtons();
 renderProductList();
@@ -201,10 +201,16 @@ filteredProducts = products.filter(p =>
 selectedCategories.includes(p.category)
 );
 }
-if (filteredProducts.length === 0) {
-div.innerHTML = '<div style="color:#666;">(No products in selected categories.)</div>';
-return;
+
+if (selectedCategories.length === 0) {
+  div.innerHTML = '<div style="color:#666;">(Select a category to view products.)</div>';
+  return;
 }
+if (filteredProducts.length === 0) {
+  div.innerHTML = '<div style="color:#666;">(No products in selected categories.)</div>';
+  return;
+}
+
 filteredProducts.forEach(p => {
 div.innerHTML += `
          <div class="product flex" data-id="${p.id}">
@@ -227,7 +233,7 @@ div.innerHTML += `
                <label>Category:</label>
                <span>${p.category}</span>
              </div>
-             <div>
+             <div class="parts-price-field" style="display:none;">
                <label>Parts Price:</label>
                <input type="number" min="0" step="0.01" value="${p.partsPrice}" onchange="editProductPartsPriceById('${p.id}', this.value)">
              </div>
@@ -362,7 +368,20 @@ const itemExtras = extras.filter(e =>
 e.checked && e.category && e.category.toLowerCase() === item.category.toLowerCase()
 );
 const itemExtrasTotal = itemExtras.reduce((t,e)=>t+e.price,0);
-const totalInstalled = item.price + item.install + (usePartsPrice||0) + itemExtrasTotal;
+
+// Identify reverse camera extras (case-insensitive)
+const reverseCameras = itemExtras.filter(ex => ex.name.toLowerCase().includes('camera'));
+const reverseCameraTotal = reverseCameras.reduce((t,e)=>t+e.price,0);
+
+// Base installed excludes reverse camera
+const baseInstalled = item.price + item.install + (usePartsPrice||0) + (itemExtrasTotal - reverseCameraTotal);
+let priceLine = `✅ Complete Installed Package: $${baseInstalled.toFixed(2)}`;
+
+if (reverseCameraTotal > 0 && item.category.toLowerCase() === 'indash av') {
+  const withCamera = baseInstalled + reverseCameraTotal;
+  priceLine += ` ($${withCamera.toFixed(2)} With Camera)`;
+}
+
 
 productHtml += `
        <div style="font-family:Arial,sans-serif;max-width:600px;padding:10px;border:1px solid #ddd;margin-bottom:20px;">
@@ -392,7 +411,7 @@ productHtml += `
               </div>`
            : ''}
          <div style="margin-top:10px;padding:10px;border:2px solid #9b59b6;border-radius:8px;background-color:#f5edfa;text-align:center;font-size:18px;font-weight:bold;">
-           ✅ Complete Installed Package: $${totalInstalled.toFixed(2)}
+           ${priceLine}
          </div>
        </div>`;
 });
