@@ -19,6 +19,7 @@ input[type="text"], input[type="number"], textarea { width: 100%; padding: 4px; 
 .category-toggle { margin: 0 8px 12px 0; padding: 8px 14px; border-radius: 20px; border: 1px solid #ccc; background: #f7f7fb; cursor: pointer; display: inline-block; font-weight: bold;}
 .category-toggle.active { background: #9b59b6; color: #fff; border: 2px solid #7c3aed; }
 .category-bar { margin-bottom: 14px; }
+#extrasList img { max-width: 180px !important; max-height: 180px !important; }
 </style>
 </head>
 <body>
@@ -417,7 +418,7 @@ productHtml += `
                    ${itemExtras.map(ex => `
                      <div style="flex:1 1 calc(50% - 10px);box-sizing:border-box;text-align:center;align-items:flex-start;display:flex;flex-direction:column;justify-content:flex-start;padding:10px;border:1px solid #ccc;border-radius:8px;background-color:#f9f9f9;height:180px;">
                        ${ex.imgUrl ? `<div style="height:80px;width:100%;display:flex;align-items:center;justify-content:center;margin-bottom:5px;">
-                         <img src="${ex.imgUrl}" class="extra-thumb">
+                         <img src="${ex.imgUrl}" style="max-height:90px;max-width:90px;object-fit:contain;border-radius:4px;">
                        </div>` : ''}
                        <p style="margin:5px 0;font-weight:bold;">${ex.name}</p>
                      </div>
