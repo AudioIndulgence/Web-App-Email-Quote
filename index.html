@@ -14,7 +14,8 @@ input[type="text"], input[type="number"], textarea { width: 100%; padding: 4px; 
 .quote-preview { background: #f5edfa; border: 2px solid #9b59b6; border-radius: 12px; padding: 18px; margin: 20px 0; }
 .btn { background: #9b59b6; color: #fff; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-size: 1.1em; }
 .btn:active { opacity: 0.8; }
-.img-thumb { max-width: 300px; max-height: 300px; border-radius: 6px; display: block; margin-bottom: 4px; }
+.img-thumb { max-width: 300px; max-height: 300px; }
+.extra-thumb { max-width: 180px; max-height: 180px; border-radius: 6px; border-radius: 6px; display: block; margin-bottom: 4px; }
 .category-toggle { margin: 0 8px 12px 0; padding: 8px 14px; border-radius: 20px; border: 1px solid #ccc; background: #f7f7fb; cursor: pointer; display: inline-block; font-weight: bold;}
 .category-toggle.active { background: #9b59b6; color: #fff; border: 2px solid #7c3aed; }
 .category-bar { margin-bottom: 14px; }
@@ -70,14 +71,14 @@ Show Vehicle-Specific Parts
 </div>
 <!-- Key Features Toggle -->
 <div>
-<label><input id="showKeyFeatures" type="checkbox"> Show Key Features in Quote</label>
+<label><input id="showKeyFeatures" type="checkbox" checked> Show Key Features in Quote</label>
 </div>
 <hr>
 <h3>Select Products</h3>
 <div id="productsList"></div>
 <hr>
   <h3>Select Optional Extras</h3>
-  <h3>Select Optioned Extras</h3>
+  
 <div id="extrasList"></div>
 <button class="btn" onclick="generateQuote()">Generate Quote</button>
 <button class="btn" onclick="copyQuote()">Copy Text Only</button>
@@ -164,6 +165,7 @@ selectedCategories = []; // start empty, no products until category is selected
 renderCategoryButtons();
 renderProductList();
 renderExtrasList();
+checkExtrasVisibility();
 renderVehiclePartsOptions();
 }
 
@@ -188,6 +190,7 @@ selectedCategories.push(cat);
 renderCategoryButtons();
 renderProductList();
 renderExtrasList();
+checkExtrasVisibility();
 }
 
 // ---- RENDER PRODUCTS ----
@@ -203,7 +206,18 @@ selectedCategories.includes(p.category)
 }
 
 if (selectedCategories.length === 0) {
-  div.innerHTML = '<div style="color:#666;">(Select a category to view products.)</div>';
+  div.innerHTML = `<div style="
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      color: #666;
+      background: #f9f9fb;
+      font-size: 1.1em;
+    ">
+      <p style="margin: 0; font-weight: bold; font-size: 1.2em;">📂 No Products Displayed</p>
+      <p style="margin: 8px 0 0;">👉 Please select a category above to view available products.</p>
+    </div>`;
   return;
 }
 if (filteredProducts.length === 0) {
@@ -251,6 +265,7 @@ const p = products.find(x => x.id === id);
 if (p) {
 p.checked = !p.checked;
 renderExtrasList();
+checkExtrasVisibility();
 }
 }
 window.editProductPriceById = function(id, v) { const p = products.find(x => x.id === id); if (p) p.price = parseFloat(v)||0; }
@@ -268,8 +283,8 @@ const selectedCategoriesForExtras = products.filter(p => p.checked).map(p => p.c
 
 // If no products selected, show nothing or a message
 if (selectedCategoriesForExtras.length === 0) {
-div.innerHTML = '<div style="color:#666;">(Select a product to see available optional extras.)</div>';
-return;
+  div.innerHTML = '';
+  return;
 }
 
 // Only show extras that match one of the selected categories
@@ -402,7 +417,7 @@ productHtml += `
                    ${itemExtras.map(ex => `
                      <div style="flex:1 1 calc(50% - 10px);box-sizing:border-box;text-align:center;align-items:flex-start;display:flex;flex-direction:column;justify-content:flex-start;padding:10px;border:1px solid #ccc;border-radius:8px;background-color:#f9f9f9;height:180px;">
                        ${ex.imgUrl ? `<div style="height:80px;width:100%;display:flex;align-items:center;justify-content:center;margin-bottom:5px;">
-                         <img src="${ex.imgUrl}" style="max-height:90px;max-width:90px;object-fit:contain;border-radius:4px;">
+                         <img src="${ex.imgUrl}" class="extra-thumb">
                        </div>` : ''}
                        <p style="margin:5px 0;font-weight:bold;">${ex.name}</p>
                      </div>
@@ -472,6 +487,15 @@ temp.innerHTML = html;
 const text = temp.innerText;
 navigator.clipboard.writeText(text).then(()=>alert('Quote copied to clipboard!'));
 }
+
+function checkExtrasVisibility() {
+  const anyProductSelected = products.some(p => p.checked);
+  const section = document.getElementById('extrasSection');
+  if (section) {
+    section.style.display = anyProductSelected ? 'block' : 'none';
+  }
+}
+
 // ---- INIT ----
 loadAllData();
 
